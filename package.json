@@ -1,0 +1,27 @@
+{
+  "name": "hunity-api",
+  "version": "1.0.0",
+  "description": "REST API for Hunity GRU (Ground Reference Unit)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onionsat/hunity-api.git"
+  },
+  "keywords": [
+    "hunity"
+  ],
+  "author": "Pécsi Tamás (https://github.com/tamaspecsi)",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/onionsat/hunity-api/issues"
+  },
+  "homepage": "https://github.com/onionsat/hunity-api#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1"
+  }
+}
