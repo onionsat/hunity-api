@@ -1,13 +1,28 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const initDB = require('./misc/database');
+const createAuthMiddleware = require('./misc/authMiddleware');
 
 require('dotenv').config();
 
 const app = express();
 const port = 3000;
 
-app.use(express.json());
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 min
+  max: 80, // limit each IP to 100 requests
+  handler: (req, res) => {
+    res.status(429).json({
+      success: false,
+      message: "Too many requests! Please retry after " + Math.ceil(req.rateLimit.resetTime - Date.now()) / 1000 + " seconds.",
+      retryAt: req.rateLimit.resetTime
+    });
+  }
+});
 
+app.use(limiter);
+
+app.use(express.json());
 
 /* Route definitions start here */
 const getExperimentData = require('./routes/getExperimentData');
@@ -19,9 +34,12 @@ const getExperimentData = require('./routes/getExperimentData');
   try {
     const db = await initDB();
 
+    const auth = createAuthMiddleware(db);
+
+
     // Do NOT forget to add db if nescessary!
     /* Route definitions start here */
-    app.use('/getExperimentData', getExperimentData(db));
+    app.use('/getExperimentData', auth, getExperimentData(db));
     /* Route definitions end here */
 
     app.listen(port, () => {
