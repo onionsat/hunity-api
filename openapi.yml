@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Hunity GRU API
+  description: Specification for the Hunity Ground Reference Unit API.
+  version: 1.0.0
+servers:
+  - description: GRU Production
+    url: https://gru.onionsat.com/v1
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+paths:
+  /getExperimentData:
+    get:
+      summary: Kísérlet adatok lekérése
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experiment
+          in: query
+          description: A kísérlet azonosítója (1...6)
+          required: true
+          schema:
+            type: integer
+        - name: results
+          in: query
+          description: A lekérni kívánt adatsorok mennyisége
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 100
+                    description: Az OBC lekérdezés azonosítója
+                  experimentid:
+                    type: integer
+                    example: 1
+                    description: A kísérlet azonosítója
+                  expdata:
+                    type: string
+                    example: "0107C707C707C900000946CBCBCBCBCB"
+                    description: A kísérlet által visszaküldött adatsor hexadecimális kódolással
+                  unixtimestamp:
+                    type: string
+                    format: date-time
+                    description: Az OBC lekérdezés időpontja
+        '400':
+          description: Hiányzó kísérleti azonosító (experiment mező)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "MissingFields"
+                  message:
+                    type: string
+                    example: "Please define experiment ID!"
+        '500':
+          description: Szerverhiba
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "ServerError"
+                  message:
+                    type: string
+                    example: "Unexpected server error had ocurred. Please contact administrator."

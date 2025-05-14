@@ -9,7 +9,11 @@ module.exports = function (db) {
 
     try {
       if (!experiment) {
-        return res.status(400).json({ error: 'Please define experiment id!' });
+        return res.status(400).json({
+          success: false,
+          code: "MissingFields",
+          message: "Please define experiment ID!",
+        });
       }
 
       if (isNaN(results) || results <= 0) results = 10;
@@ -30,7 +34,11 @@ module.exports = function (db) {
       res.json(rows);
     } catch (err) {
       console.error('DB error:', err);
-      res.status(500).json({ error: 'Database error' });
+      return res.status(500).json({
+        success: false,
+        code: "ServerError",
+        message: "Unexpected server error had ocurred. Please contact administrator.",
+      });
     }
   });
 
