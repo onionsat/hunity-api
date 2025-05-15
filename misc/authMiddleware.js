@@ -1,5 +1,6 @@
 function createAuthMiddleware(db) {
     return async function authMiddleware(req, res, next) {
+      console.log('Request body2:', req.body); // Debug log
       const auth = req.headers.authorization;
       if (!auth || !auth.startsWith('Bearer ')) {
         return res.status(401).json({
@@ -29,7 +30,7 @@ function createAuthMiddleware(db) {
                 });
             }
   
-            req.userId = row.id;
+            req.experimentId = row.id;
             return next();
           }
         }

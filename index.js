@@ -8,6 +8,9 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // URL-encoded formátumú adatokhoz
+
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 min
   max: 80, // limit each IP to 100 requests
@@ -22,10 +25,9 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use(express.json());
-
 /* Route definitions start here */
 const getExperimentData = require('./routes/getExperimentData');
+const writeCommand = require('./routes/writeCommand');
 /* Route definitions end here */
 
 
@@ -40,6 +42,7 @@ const getExperimentData = require('./routes/getExperimentData');
     // Do NOT forget to add db if nescessary!
     /* Route definitions start here */
     app.use('/getExperimentData', auth, getExperimentData(db));
+    app.use('/writeCommand', auth, writeCommand(db, auth));
     /* Route definitions end here */
 
     app.listen(port, () => {
