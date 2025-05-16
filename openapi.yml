@@ -49,7 +49,7 @@ paths:
                     example: 1
                     description: A kísérlet azonosítója
                   expdata:
-                    type: string
+                    type: integer
                     example: "0107C707C707C900000946CBCBCBCBCB"
                     description: A kísérlet által visszaküldött adatsor hexadecimális kódolással
                   unixtimestamp:
@@ -72,6 +72,237 @@ paths:
                   message:
                     type: string
                     example: "Please define experiment ID!"
+        '500':
+          description: Szerverhiba
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "ServerError"
+                  message:
+                    type: string
+                    example: "Unexpected server error had ocurred. Please contact administrator."
+  /getCommands:
+    get:
+      summary: Kísérleteknek küldött parancsok (és azok státuszának) lekérése
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experiment
+          in: query
+          description: A kísérlet azonosítója (1...6)
+          required: true
+          schema:
+            type: integer
+        - name: commandId
+          in: query
+          description: A lekérni kívánt parancs azonosítója
+          required: false
+          schema:
+            type: integer
+        - name: results
+          in: query
+          description: A lekérni kívánt adatsorok mennyisége
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 100
+                    description: A parancs azonosítója
+                  experimentid:
+                    type: integer
+                    example: 1
+                    description: A kísérlet azonosítója
+                  command:
+                    type: string
+                    example: "FCFCFCFCFCFCFCFCFC"
+                    description: A kísérletnek küldött parancs
+                  sent:
+                    type: integer
+                    example: 1
+                    description: A küldés állapota
+                  sent_to_master:
+                    type: string
+                    format: date-time
+                    description: Parancs beküldésének időpontja
+                  sent_to_experiment:
+                    type: string
+                    format: date-time
+                    description: Parancs végrehajtásának időpontja
+        '400':
+          description: Hiányzó kísérleti azonosító (experiment mező)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "MissingFields"
+                  message:
+                    type: string
+                    example: "Please define experiment ID!"
+        '500':
+          description: Szerverhiba
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "ServerError"
+                  message:
+                    type: string
+                    example: "Unexpected server error had ocurred. Please contact administrator."
+  /getExperiments:
+    get:
+      summary: Kísérletek listázása
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experiment
+          in: query
+          description: A kísérlet azonosítója (1...6)
+          required: false
+          schema:
+            type: integer
+        - name: results
+          in: query
+          description: A lekérni kívánt adatsorok mennyisége
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 100
+                    description: A kísérlet azonosítója
+                  name:
+                    type: string
+                    example: "OnionSAT"
+                    description: A kísérlet neve
+                  description:
+                    type: string
+                    example: "Müon detektor"
+                    description: A kísérlet rövid leírása
+        '500':
+          description: Szerverhiba
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "ServerError"
+                  message:
+                    type: string
+                    example: "Unexpected server error had ocurred. Please contact administrator."
+  /writeCommand:
+    post:
+      summary: Parancs küldése kísérletnek
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: experiment
+          in: query
+          description: A kísérlet azonosítója (1...6)
+          required: true
+          schema:
+            type: integer
+        - name: command
+          in: query
+          description: A kiküldeni kívánt parancs (hexadecimális formátumban, előtagok és szóközök nélkül)
+          required: false
+          schema:
+            type: string
+      responses:
+        '201':
+          description: A parancs sikeresen beszúrásra került
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                    description: A kérés sikerességének állapota
+                  message:
+                    type: string
+                    example: "Command inserted successfully!"
+                    description: A sikeres művelet üzenete
+                  commandId:
+                    type: integer
+                    example: 3
+                    description: A beszúrt parancs azonosítója
+        '400':
+          description: Hiányzó kísérleti azonosító vagy parancs (experiment,command mező)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: "MissingFields"
+                  message:
+                    type: string
+                    example: "Please define experiment ID!"
+        '403':
+          description: Azonosítási hiba - A kísérlet azonosítója nem egyezik az autentikált kísérlettel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                    description: A kérés sikerességének állapota
+                  code:
+                    type: string
+                    example: "Forbidden"
+                    description: A hiba kódja
+                  message:
+                    type: string
+                    example: "Experiment ID does not match the authenticated experiment."
+                    description: A hibaüzenet
         '500':
           description: Szerverhiba
           content:

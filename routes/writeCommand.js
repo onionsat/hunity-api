@@ -28,11 +28,13 @@ module.exports = function (db, authMiddleware) {
         const query = 'INSERT INTO writecommands (experimentid, command, sent) VALUES (?, ?, ?)';
         const params = [experimentid, command, 0];
   
-        await db.execute(query, params);
-  
+        const [result] = await db.execute(query, params);
+        const insertedId = result.insertId;
+
         res.status(201).json({
           success: true,
           message: "Command inserted successfully!",
+          commandId: insertedId
         });
       } catch (error) {
         console.error(error);

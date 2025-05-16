@@ -28,6 +28,8 @@ app.use(limiter);
 /* Route definitions start here */
 const getExperimentData = require('./routes/getExperimentData');
 const writeCommand = require('./routes/writeCommand');
+const getExperiments = require('./routes/getExperiments');
+const getCommands = require('./routes/getCommands');
 /* Route definitions end here */
 
 
@@ -43,6 +45,8 @@ const writeCommand = require('./routes/writeCommand');
     /* Route definitions start here */
     app.use('/getExperimentData', auth, getExperimentData(db));
     app.use('/writeCommand', auth, writeCommand(db, auth));
+    app.use('/getExperiments', auth, getExperiments(db));
+    app.use('/getCommands', auth, require('./routes/getCommands')(db));
     /* Route definitions end here */
 
     app.listen(port, () => {
