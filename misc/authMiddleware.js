@@ -22,7 +22,7 @@ function createAuthMiddleware(db) {
           const ips = JSON.parse(row.allowed_ips || '[]');
   
           if (keys.includes(apiKey)) {
-            if (!ips.includes(ip)) {
+            if (!ips.includes(ip) || !ips.includes("*")) {
                 return res.status(403).json({
                     success: false,
                     code: "AuthenticationFailed",
