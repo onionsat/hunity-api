@@ -8,6 +8,7 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
+app.set('trust proxy', 'loopback');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded formátumú adatokhoz
 
@@ -43,10 +44,10 @@ const getCommands = require('./routes/getCommands');
 
     // Do NOT forget to add db if nescessary!
     /* Route definitions start here */
-    app.use('/getExperimentData', auth, getExperimentData(db));
-    app.use('/writeCommand', auth, writeCommand(db, auth));
-    app.use('/getExperiments', auth, getExperiments(db));
-    app.use('/getCommands', auth, require('./routes/getCommands')(db));
+    app.use('/v1/getExperimentData', auth, getExperimentData(db));
+    app.use('/v1/writeCommand', auth, writeCommand(db, auth));
+    app.use('/v1/getExperiments', auth, getExperiments(db));
+    app.use('/v1/getCommands', auth, require('./routes/getCommands')(db));
     /* Route definitions end here */
 
     app.listen(port, () => {
