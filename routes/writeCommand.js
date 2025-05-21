@@ -5,19 +5,37 @@ module.exports = function (db, authMiddleware) {
   
     // A writeCommand végpont, amely az authMiddleware-t használja
     router.post('/', authMiddleware, async (req, res) => {
-        console.log('Request body:', req.body); // Debug log
-      const { command, experimentid } = req.body;
+      console.log('Request body:', req.body); // Debug log
+
+      if (!req.body) {
+        return res.status(400).json({
+          success: false,
+          code: "MalformedRequestBody",
+          message: "Request body is required for POST requests.",
+        });
+      }
+
+      const { command, experiment } = req.body;
   
       try {
-        if (!command || !experimentid) {
+        if (!command || !experiment) {
           return res.status(400).json({
             success: false,
             code: "MissingFields",
             message: "Command and experiment ID are required!",
           });
         }
+
+        const hexRegex = /^[0-9a-fA-F]{16}$/;
+        if (!hexRegex.test(command)) {
+            return res.status(400).json({
+                success: false,
+                code: "InvalidCommand",
+                message: "Command must be exactly 16 ASCII characters representing 8 hexadecimal bytes (without '0x' prefix).",
+            });
+        }
   
-        if (Number(experimentid) !== Number(req.experimentId)) {
+        if (Number(experiment) !== Number(req.experimentId)) {
           return res.status(403).json({
             success: false,
             code: "Forbidden",
@@ -26,7 +44,7 @@ module.exports = function (db, authMiddleware) {
         }
   
         const query = 'INSERT INTO writecommands (experimentid, command, sent) VALUES (?, ?, ?)';
-        const params = [experimentid, command, 0];
+        const params = [experiment, command, 0];
   
         const [result] = await db.execute(query, params);
         const insertedId = result.insertId;
