@@ -6,6 +6,8 @@ module.exports = function (db) {
   router.get('/', async (req, res) => {
     const experiment = req.query.experiment;
     let results = parseInt(req.query.results, 10);
+    const startId = parseInt(req.query.startId, 10);
+    const endId = parseInt(req.query.endId, 10);
 
     try {
       if (!experiment) {
@@ -17,7 +19,7 @@ module.exports = function (db) {
       }
 
       if (isNaN(results) || results <= 0) results = 10;
-      if (results > 100) results = 100;
+      if (results > 1000) results = 1000;
 
       let query = 'SELECT * FROM experimentdata';
       const params = [];
@@ -27,7 +29,18 @@ module.exports = function (db) {
         params.push(experiment);
       }
 
+      if (!isNaN(startId)) {
+        query += params.length ? ' AND id >= ?' : ' WHERE id >= ?';
+        params.push(startId);
+      }
+
+      if (!isNaN(endId)) {
+        query += params.length ? ' AND id <= ?' : ' WHERE id <= ?';
+        params.push(endId);
+      }
+
       query += ' ORDER BY id DESC LIMIT ?';
+      console.log(query);
       params.push(results);
 
       const [rows] = await db.execute(query, params);

@@ -32,6 +32,18 @@ paths:
           required: false
           schema:
             type: string
+        - name: startId
+          in: query
+          required: false
+          description: The starting ID for filtering experiment data.
+          schema:
+            type: integer
+        - name: endId
+          in: query
+          required: false
+          description: The ending ID for filtering experiment data.
+          schema:
+            type: integer
       responses:
         '200':
           description: Sikeres lekérdezés
@@ -235,19 +247,21 @@ paths:
       summary: Parancs küldése kísérletnek
       security:
         - bearerAuth: []
-      parameters:
-        - name: experiment
-          in: query
-          description: A kísérlet azonosítója (1...6)
-          required: true
-          schema:
-            type: integer
-        - name: command
-          in: query
-          description: A kiküldeni kívánt parancs (hexadecimális formátumban, előtagok és szóközök nélkül)
-          required: false
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+                  description: The command to write (16 ASCII characters representing 8 hexadecimal bytes).
+                  example: "1234abcd5678ef90"
+                experiment:
+                  type: integer
+                  description: The ID of the experiment the command is associated with.
+                  example: 1
       responses:
         '201':
           description: A parancs sikeresen beszúrásra került
