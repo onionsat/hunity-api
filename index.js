@@ -28,6 +28,7 @@ app.use(limiter);
 
 /* Route definitions start here */
 const getExperimentData = require('./routes/getExperimentData');
+const getTemperatureData = require('./routes/getTemperatureData');
 const writeCommand = require('./routes/writeCommand');
 const getExperiments = require('./routes/getExperiments');
 const getCommands = require('./routes/getCommands');
@@ -45,9 +46,10 @@ const getCommands = require('./routes/getCommands');
     // Do NOT forget to add db if nescessary!
     /* Route definitions start here */
     app.use('/v1/getExperimentData', auth, getExperimentData(db));
+    app.use('/v1/getTemperatureData', auth, getTemperatureData(db));
     app.use('/v1/writeCommand', auth, writeCommand(db, auth));
     app.use('/v1/getExperiments', auth, getExperiments(db));
-    app.use('/v1/getCommands', auth, require('./routes/getCommands')(db));
+    app.use('/v1/getCommands', auth, getCommands(db));
     /* Route definitions end here */
 
     app.listen(port, () => {

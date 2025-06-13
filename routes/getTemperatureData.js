@@ -4,7 +4,6 @@ module.exports = function (db) {
   const router = express.Router();
 
   router.get('/', async (req, res) => {
-    const experiment = parseInt(req.query.experiment, 10);
     let results = parseInt(req.query.results, 10);
     const startId = parseInt(req.query.startId, 10);
     const endId = parseInt(req.query.endId, 10);
@@ -15,13 +14,8 @@ module.exports = function (db) {
       if (isNaN(results) || results <= 0) results = 10;
       if (results > 1000) results = 1000;
 
-      let query = 'SELECT * FROM experimentdata';
+      let query = 'SELECT * FROM bmedata';
       const params = [];
-
-      if (experiment) {
-        query += ' WHERE experimentid = ?';
-        params.push(experiment);
-      }
 
       if (!isNaN(startId)) {
         query += params.length ? ' AND id >= ?' : ' WHERE id >= ?';

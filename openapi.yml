@@ -23,7 +23,7 @@ paths:
         - name: experiment
           in: query
           description: A kísérlet azonosítója (1...6)
-          required: true
+          required: false
           schema:
             type: integer
         - name: results
@@ -35,13 +35,25 @@ paths:
         - name: startId
           in: query
           required: false
-          description: The starting ID for filtering experiment data.
+          description: Az adatbázis bejegyzések szűrése, azonosító alapján. Szűrő kezdő azonosító.
           schema:
             type: integer
         - name: endId
           in: query
           required: false
-          description: The ending ID for filtering experiment data.
+          description: Az adatbázis bejegyzések szűrése, azonosító alapján. Szűrő végső azonosító.
+          schema:
+            type: integer
+        - name: startTimestamp
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, dátum alapján. Szűrő kezdő dátum. Megadható UNIX timestamp vagy ISO dátum formátumban (2025-06-12T14:59:37.000Z).
+          schema:
+            type: integer
+        - name: endTimestamp
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, dátum alapján. Szűrő végső dátum. Megadható UNIX timestamp vagy ISO dátum formátumban (2025-06-12T14:59:37.000Z).
           schema:
             type: integer
       responses:
@@ -64,12 +76,12 @@ paths:
                     type: integer
                     example: "0107C707C707C900000946CBCBCBCBCB"
                     description: A kísérlet által visszaküldött adatsor hexadecimális kódolással
-                  unixtimestamp:
+                  timestamp:
                     type: string
                     format: date-time
                     description: Az OBC lekérdezés időpontja
-        '400':
-          description: Hiányzó kísérleti azonosító (experiment mező)
+        '500':
+          description: Szerverhiba
           content:
             application/json:
               schema:
@@ -80,10 +92,74 @@ paths:
                     example: false
                   code:
                     type: string
-                    example: "MissingFields"
+                    example: "ServerError"
                   message:
                     type: string
-                    example: "Please define experiment ID!"
+                    example: "Unexpected server error had ocurred. Please contact administrator."
+  /getTemperatureData:
+    get:
+      summary: Referencia hőmérő adatok lekérése
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: results
+          in: query
+          description: A lekérni kívánt adatsorok mennyisége
+          required: false
+          schema:
+            type: string
+        - name: startId
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, azonosító alapján. Szűrő kezdő azonosító.
+          schema:
+            type: integer
+        - name: endId
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, azonosító alapján. Szűrő végső azonosító.
+          schema:
+            type: integer
+        - name: startTimestamp
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, dátum alapján. Szűrő kezdő dátum. Megadható UNIX timestamp vagy ISO dátum formátumban (2025-06-12T14:59:37.000Z).
+          schema:
+            type: integer
+        - name: endTimestamp
+          in: query
+          required: false
+          description: Az adatbázis bejegyzések szűrése, dátum alapján. Szűrő végső dátum. Megadható UNIX timestamp vagy ISO dátum formátumban (2025-06-12T14:59:37.000Z).
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sikeres lekérdezés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 100
+                    description: Az OBC lekérdezés azonosítója
+                  temperature:
+                    type: float
+                    example: 26.74
+                    description: Hőmérséklet, celsius fokban
+                  pressure:
+                    type: float
+                    example: 1014.25
+                    description: Légnyomás, hPa-ban
+                  humidity:
+                    type: float
+                    example: 78.12
+                    description: Relatív páratartalom, 0-100%
+                  timestamp:
+                    type: string
+                    format: date-time
+                    description: Az OBC lekérdezés időpontja
         '500':
           description: Szerverhiba
           content:
