@@ -16,7 +16,7 @@ API kulcs módosítással, IP fehérlistával kapcsolatos módosításokat, egy�
 ### Jelenlegi API szerverek
 - https://gru.onionsat.com/v1
   - Minden végpont elérhető
-  - 80 lekérés/perc (a hátralévő kvótáról a válaszfejlécek között található információ)
+  - 300 lekérés/perc (a hátralévő kvótáról a válaszfejlécek között található információ)
      - X-RateLimit-Reset: UNIX időbélyeg, kvóta visszaállításának időpontja (pl: 1747760646)
      - X-RateLimit-Limit: Lekérési kvótalimit (pl: 80)
      - X-RateLimit-Remaining: Hátralévő kvóta (pl: 79)
