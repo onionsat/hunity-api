@@ -35,11 +35,11 @@ async function getEXPData(ws, db, experimentId, startTimestamp, endTimestamp) {
                 return;
             }
 
-            if ((endTimestamp - startTimestamp > 21600)) {
+            if ((endTimestamp - startTimestamp > 604800)) {
                 ws.send(JSON.stringify({
                     success: false,
                     code: "TimeRangeExceeded",
-                    message: "A lekérdezhető időintervallum maximum 6 óra lehet.",
+                    message: "A lekérdezhető időintervallum maximum 168 óra lehet.",
                 }));
                 return;
             }

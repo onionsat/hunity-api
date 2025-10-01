@@ -13,7 +13,7 @@ module.exports = function (db) {
 
     try {
       if (isNaN(results) || results <= 0) results = 10;
-      if (results > 1000) results = 1000;
+      if (results > 100000) results = 100000;
 
       let query = 'SELECT * FROM experimentdata';
       const params = [];
